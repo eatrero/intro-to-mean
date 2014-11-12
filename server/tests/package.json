@@ -1,0 +1,9 @@
+{
+  "name": "nodeapi",
+  "main": "server.js",
+  "dependencies" : {
+    "superagent": "latest",
+    "expect.js": "latest",
+    "superagent-prefix": "latest"
+  }
+}
