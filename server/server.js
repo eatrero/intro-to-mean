@@ -1,12 +1,12 @@
 'use strict';
 
 var express = require('express'),
-    mongoose = require('mongoose'),
+  mongoose = require('mongoose'),
 	http = require('http'),
 	bodyParser = require('body-parser'),
 	connect = require('connect'),
-    path = require('path'),
-    app = express();
+  path = require('path'),
+  app = express();
 
 // ====================== 
 // ==== Mongo / Mongoose

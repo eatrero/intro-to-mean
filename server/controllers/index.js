@@ -24,6 +24,7 @@ module.exports = function(mongoConnection){
 				throw err;
 
 			console.log('Todo create callback');
+			console.log(doc);
 			res.send(doc);
 		});
 	};
