@@ -8,12 +8,7 @@ var express = require('express'),
   path = require('path'),
   app = express();
 
-// ====================== 
-// ==== Mongo / Mongoose
-// ====================== 
-var mongoConnection = mongoose.createConnection('mongodb://localhost:27017');
-
-// ====================== 
+// ======================
 // ==== Express
 // ====================== 
 app.use(bodyParser.json());
@@ -28,7 +23,7 @@ app.set('views', path.join(__dirname, '/views'));
 // Express Router
 var httpRouter = express.Router();
 app.use('*', httpRouter);
-require('./routes')(app, mongoConnection);
+require('./routes')(app);
 
 
 // ====================== 

@@ -1,51 +1,78 @@
-<!doctype html>
-<html >
-<head lang="en">
-  <meta charset="UTF-8">
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+  <title>FW13 Tasks</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>Intro to MEAN</title>
-
-  <!-- jQuery -->
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="bower_components/angular-chart.js/dist/angular-chart.css">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
-
-  <!--   Core Angular Files -->	
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-animate.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
-
-  <script src='https://cdn.firebase.com/js/client/2.0.4/firebase.js'></script>
-  <script src='https://cdn.firebase.com/libs/angularfire/0.8.0/angularfire.min.js'></script>
-
-  <script src="scripts/app.js"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
 </head>
+<body ng-controller="MainCtrl">
 
-<body ng-app='app'>
-  <div ng-controller='todoController'>
-    <h1>{{greeting}}</h1>
+<div style="background-color:#46b8da">
+<div class="container" style=";margin-bottom:0px;">
+  <section class="row" id="header-section" style="margin-top:0px; margin-bottom:0px;padding-bottom:120px;padding-top:120px;">
+    <div class="col-sm-6" id="bigtextme" ng-cloak style="margin-left:auto; margin-right:auto;text-align:center">
+      <span style="font-size:12em; line-height: 1.5em; color:white;"> {{ complete / (complete + incomplete) * 100 | number : 0 }}%</span>
+    </div>
+    <div class="col-sm-6">
+      <canvas id="doughnut" class="chart chart-doughnut" data="data"
+              labels="labels" legend="true"></canvas>
+    </div>
+  </section>
+</div>
+</div>
 
-    <input type='text' ng-model='greeting'>
 
-    <table>
-      <tr>
-        <th>Student Name</th>
-        <th>Task</th>
-        <th></th>
-      </tr>
-      <tr ng-repeat="student in students">
-        <td>{{student.name}}</td>
-        <td ng-repeat="task in student.tasks1">{{task.task}}</td>
-      </tr>
-    </table>
+<section class='row' style="margin-top:50px;margin-bottom:50px;">
 
-    <form name='todo'>
-      <input ng-model='todo.item' type='text' placeholder='new todo item'>
-      <button ng-click="postTodo(todo)">Add </button>
-    </form>
+<div class="container" >
 
-  </div>
+<table class="table table-striped edit">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th ng-repeat="task in taskNames">{{task.name}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="(id, item) in items">
+    <td><input type="text" ng-model="item.name" ng-blur="updateItem(id)"/></td>
+    <td ng-repeat="task in item.tasks"><input type="checkbox" ng-model="task.completed" ng-change="updateItem(id)"/></td>
+    <td>
+      {{ item.percent }} % complete
+    </td>
+    <td>
+      <a href="#" ng-click="removeItem(id)" class="navbar-link">Remove</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="well">
+  <h4>Add Student</h4>
+
+  <form class="form-inline" role="form" novalidate ng-submit="addItem()">
+    <div class="form-group">
+      <input type="text" class="form-control" ng-model="newItem.name" placeholder="Name">
+    </div>
+    <button type="submit" class="btn btn-default">Add</button>
+  </form>
+</div>
+
+</div>
+</section>
+
+
+<script src="https://cdn.firebase.com/v0/firebase.js"></script>
+<script src="https://cdn.firebase.com/libs/angularfire/0.6.0/angularfire.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+<script src="bower_components/Chart.js/Chart.js"></script>
+<script src="bower_components/angular-chart.js/angular-chart.js"></script>
+
+<script src="scripts/app.js"></script>
 
 </body>
-
 </html>
