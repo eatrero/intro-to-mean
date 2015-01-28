@@ -1,24 +1,37 @@
 var app = angular.module("app",["firebase", "chart.js"]);
 
-app.constant('FIREBASE_URI', 'https://fw13students.firebaseio.com/');
+app.constant('FIREBASE_URI1', 'https://fw13students.firebaseio.com/');
+app.constant('FIREBASE_URI2', 'https://fw13students2.firebaseio.com/');
 
+app.controller("MainCtrl", ["$scope", "$location", "ItemsService", "$firebase", "FIREBASE_URI1", "FIREBASE_URI2",
+	function($scope, $location, ItemsService, FIREBASE_URI1, FIREBASE_URI2) {
+		var ref1 = new Firebase('https://fw13students.firebaseio.com/');
+        var ref2 = new Firebase('https://fw13students2.firebaseio.com/');
+		var snapshot1;
 
-app.controller("MainCtrl", ["$scope", "ItemsService", "$firebase", "FIREBASE_URI",
-	function($scope, ItemsService, $firebase, FIREBASE_URI) {
-		var ref = new Firebase(FIREBASE_URI);
-		var snapshot;
+        var url = $location.absUrl();
+        console.log(url);
+        var day1 = /day1/gi;
+        var day1match = url.match(day1);
+        console.log(url.match(day1match));
 
 		$scope.labels = ["Completed Tasks", "Incomplete Tasks"];
 
 		$scope.currentItem = null;
 
-		$scope.items = ItemsService.getItems();
+		$scope.items1 = ItemsService.getItems1();
+        $scope.items2 = ItemsService.getItems2();
 
 		updateChart();
 
-		ref.on('value', function(snapshot){
+		ref1.on('value', function(snapshot1){
 			updateChart();
 		});
+        ref2.on('value', function(snapshot1){
+            updateChart();
+        });
+
+
 
 		$scope.taskNames = [
 			{name: "Turn in cards", 	completed: false},
@@ -28,7 +41,6 @@ app.controller("MainCtrl", ["$scope", "ItemsService", "$firebase", "FIREBASE_URI
 			{name: "Backup HD2",		completed: false},
 			{name: "Deliver HD to team",completed: false},
 			{name: "Get HD from team",	completed: false},
-			{name: "Drink Whisky", 		completed: false}
 		];
 
 		function resetNewItem() {
@@ -42,90 +54,153 @@ app.controller("MainCtrl", ["$scope", "ItemsService", "$firebase", "FIREBASE_URI
 					{name: "Backup HD1",		completed: false},
 					{name: "Backup HD2",		completed: false},
 					{name: "Deliver HD to team",completed: false},
-					{name: "Get HD from team",	completed: false},
-					{name: "Drink Whisky", 		completed: false}
+					{name: "Get HD from team",	completed: false}
 				],
 				percent: 0
 			};
 		}
 
 		function updateChart(){
-			ref.once('value', function(dataSnapshot) {
+			ref1.once('value', function(dataSnapshot) {
 				// store dataSnapshot for use in below examples.
-				snapshot = dataSnapshot;
+				snapshot1 = dataSnapshot;
 
 				var sumAll = 0;
 				var total = 0;
 
-				snapshot.forEach(function(item){
+				snapshot1.forEach(function(item){
 					for(var i=0; i<item.val().tasks.length; i++)
 						if(item.val().tasks[i].completed)
 							sumAll++;
 				});
-				$scope.complete = sumAll;
+				$scope.complete1 = sumAll;
 				console.log(sumAll);
 
-				snapshot.forEach(function(item){total += item.val().tasks.length});
+				snapshot1.forEach(function(item){total += item.val().tasks.length});
 
 				console.log(total);
 
-				$scope.complete = sumAll;
-				$scope.incomplete = total-sumAll;
+				$scope.incomplete1 = total-sumAll;
 
-				$scope.data = [$scope.complete, $scope.incomplete];
+				$scope.data1 = [$scope.complete1, $scope.incomplete1];
 			});
+
+            ref2.once('value', function(dataSnapshot) {
+                // store dataSnapshot for use in below examples.
+                snapshot2 = dataSnapshot;
+
+                var sumAll = 0;
+                var total = 0;
+
+                snapshot2.forEach(function(item){
+                    for(var i=0; i<item.val().tasks.length; i++)
+                        if(item.val().tasks[i].completed)
+                            sumAll++;
+                });
+                $scope.complete2 = sumAll;
+				console.log(sumAll);
+
+                snapshot2.forEach(function(item){total += item.val().tasks.length});
+
+				console.log(total);
+
+                $scope.incomplete2 = total-sumAll;
+
+                $scope.data2 = [$scope.complete2, $scope.incomplete2];
+            });
 		}
 
 		$scope.addItem = function () {
-			ItemsService.addItem(angular.copy($scope.newItem));
+            if(day1match)
+    			ItemsService.addItem1(angular.copy($scope.newItem));
+            else
+                ItemsService.addItem2(angular.copy($scope.newItem));
+
 			resetNewItem();
 		};
 
 		$scope.updateItem = function (id) {
 			var sum = 0;
-			for(var i=0; i<$scope.items[id].tasks.length; i++)
-				if($scope.items[id].tasks[i].completed)
+			for(var i=0; i<$scope.items1[id].tasks.length; i++)
+				if($scope.items1[id].tasks[i].completed)
 					sum++;
 
-			$scope.items[id].percent = sum / $scope.items[id].tasks.length * 100;
+			$scope.items1[id].percent = sum / $scope.items1[id].tasks.length * 100;
 
-			ItemsService.updateItem(id);
+            var sum = 0;
+            for(var i=0; i<$scope.items2[id].tasks.length; i++)
+                if($scope.items2[id].tasks[i].completed)
+                    sum++;
+
+            $scope.items2[id].percent = sum / $scope.items2[id].tasks.length * 100;
+
+            if(day1match)
+    			ItemsService.updateItem1(id);
+            else
+                ItemsService.updateItem2(id);
+
 
 			updateChart();
 
 		};
 
 		$scope.removeItem = function (id) {
-			ItemsService.removeItem(id);
+            if(day1match)
+    			ItemsService.removeItem1(id);
+            else
+                ItemsService.removeItem2(id);
+
 		};
 	}
 ]);
 
 
-app.factory('ItemsService', ['$firebase', 'FIREBASE_URI', function ($firebase, FIREBASE_URI) {
-	var ref = new Firebase(FIREBASE_URI);
-	var items = $firebase(ref);
+app.factory('ItemsService', ['$firebase', 'FIREBASE_URI1', 'FIREBASE_URI2', function ($firebase, FIREBASE_URI1, FIREBASE_URI2 ) {
+    var ref1= new Firebase(FIREBASE_URI1);
+    var ref2 = new Firebase(FIREBASE_URI2);
+	var items1 = $firebase(ref1);
+    var items2 = $firebase(ref2);
 
-	var getItems = function () {
-		return items;
+	var getItems1 = function () {
+		return items1;
 	};
 
-	var addItem = function (item) {
-		items.$add(item);
+	var addItem1 = function (item) {
+		items1.$add(item);
 	};
 
-	var updateItem = function (id) {
-		items.$save(id);
+	var updateItem1 = function (id) {
+		items1.$save(id);
 	};
 
-	var removeItem = function (id) {
-		items.$remove(id);
+	var removeItem1 = function (id) {
+		items1.$remove(id);
 	};
+
+    var getItems2 = function () {
+        return items2;
+    };
+
+    var addItem2 = function (item) {
+        items2.$add(item);
+    };
+
+    var updateItem2 = function (id) {
+        items2.$save(id);
+    };
+
+    var removeItem2 = function (id) {
+        items2.$remove(id);
+    };
 
 	return {
-		getItems: getItems,
-		addItem: addItem,
-		updateItem: updateItem,
-		removeItem: removeItem
+		getItems1: getItems1,
+		addItem1: addItem1,
+		updateItem1: updateItem1,
+		removeItem1: removeItem1,
+        getItems2: getItems2,
+        addItem2: addItem2,
+        updateItem2: updateItem2,
+        removeItem2: removeItem2
 	}
 }]);

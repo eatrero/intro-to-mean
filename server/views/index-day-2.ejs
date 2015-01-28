@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+  <title>FW13 Tasks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="bower_components/angular-chart.js/dist/angular-chart.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+</head>
+<body ng-controller="MainCtrl">
+
+<div style="background-color:#46b8da">
+<div class="container" style=";margin-bottom:0px;">
+  <div><a href="/"><i class="fa fa-home fa-5x fa-inverse"></i></a></div>
+  <section class="row" id="header-section" style="margin-top:0px; margin-bottom:0px;padding-bottom:120px;padding-top:120px;">
+    <div class="col-sm-6" id="bigtextme" ng-cloak style="margin-left:auto; margin-right:auto;text-align:center">
+      <span style="font-size:12em; line-height: 1.5em; color:white;"> {{ complete2 / (complete2 + incomplete2) * 100 | number : 0 }}%</span>
+    </div>
+    <div class="col-sm-6">
+      <canvas id="doughnut" class="chart chart-doughnut" data="data2"
+              labels="labels" legend="true"></canvas>
+    </div>
+  </section>
+</div>
+</div>
+
+
+<section class='row' style="margin-top:50px;margin-bottom:50px;">
+
+<div class="container" >
+<div class="table-responsive">
+<table class="table table-striped edit">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th ng-repeat="task in taskNames">{{task.name}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="(id, item) in items2">
+    <td class="names"><input type="text" ng-model="item.name" ng-blur="updateItem(id)"/></td>
+    <td ng-repeat="task in item.tasks"><input id='{{$parent.$index}}-{{$index}}' type="checkbox" class="regular-checkbox big-checkbox" ng-model="task.completed" ng-change="updateItem(id)"/><label for="{{$parent.$index}}-{{$index}}"></label></td>
+    <td>
+      {{ item.percent | number : 0 }} % complete
+    </td>
+    <td>
+     <!-- <a href="#" ng-click="removeItem(id)" class="navbar-link">Remove</a>-->
+    </td>
+  </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="well">
+  <h4>Add Student</h4>
+
+  <form class="form-inline" role="form" novalidate ng-submit="addItem()">
+    <div class="form-group">
+      <input type="text" class="form-control" ng-model="newItem.name" placeholder="Name">
+    </div>
+    <button type="submit" class="btn btn-default">Add</button>
+  </form>
+</div>
+
+</div>
+</section>
+
+
+<script src="https://cdn.firebase.com/v0/firebase.js"></script>
+<script src="https://cdn.firebase.com/libs/angularfire/0.6.0/angularfire.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+<script src="bower_components/Chart.js/Chart.js"></script>
+<script src="bower_components/angular-chart.js/angular-chart.js"></script>
+
+<script src="scripts/app.js"></script>
+
+</body>
+</html>

@@ -28,8 +28,13 @@ require('./routes')(app);
 
 // ====================== 
 // ==== SERVER
-// ====================== 
-app.set('http_port', 3245);
+// ======================
+if(process.env.local)
+    var port = 3245;
+else
+    var port = 80;
+app.set('http_port', port);
+
 var httpServer = http.createServer(app);
 
 httpServer.listen(app.get('http_port'), function(){
