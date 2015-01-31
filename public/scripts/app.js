@@ -7,7 +7,7 @@ app.controller("MainCtrl", ["$scope", "$location", "ItemsService", "$firebase", 
 	function($scope, $location, ItemsService, FIREBASE_URI1, FIREBASE_URI2) {
 		var ref1 = new Firebase('https://fw13students.firebaseio.com/');
         var ref2 = new Firebase('https://fw13students2.firebaseio.com/');
-		var snapshot1;
+		var snapshot1, snapshot2;
 
         var url = $location.absUrl();
         console.log(url);
@@ -22,12 +22,14 @@ app.controller("MainCtrl", ["$scope", "$location", "ItemsService", "$firebase", 
 		$scope.items1 = ItemsService.getItems1();
         $scope.items2 = ItemsService.getItems2();
 
+        resetNewItem();
+
 		updateChart();
 
 		ref1.on('value', function(snapshot1){
 			updateChart();
 		});
-        ref2.on('value', function(snapshot1){
+        ref2.on('value', function(snapshot2){
             updateChart();
         });
 
@@ -35,12 +37,13 @@ app.controller("MainCtrl", ["$scope", "$location", "ItemsService", "$firebase", 
 
 		$scope.taskNames = [
 			{name: "Turn in cards", 	completed: false},
-			{name: "Download cards", 	completed: false},
-			{name: "Cull images",		completed: false},
-			{name: "Backup HD1",		completed: false},
-			{name: "Backup HD2",		completed: false},
-			{name: "Deliver HD to team",completed: false},
-			{name: "Get HD from team",	completed: false},
+			{name: "Ingest", 	        completed: false},
+			{name: "Cull",		        completed: false},
+			{name: "Post",		        completed: false},
+			{name: "Export",		    completed: false},
+			{name: "Deliver HD",        completed: false},
+			{name: "Get HD",	        completed: false},
+            {name: "Print",	            completed: false}
 		];
 
 		function resetNewItem() {
@@ -49,12 +52,13 @@ app.controller("MainCtrl", ["$scope", "$location", "ItemsService", "$firebase", 
 				description: '',
 				tasks: [
 					{name: "Turn in cards", 	completed: false},
-					{name: "Download cards", 	completed: false},
-					{name: "Cull images",		completed: false},
-					{name: "Backup HD1",		completed: false},
-					{name: "Backup HD2",		completed: false},
-					{name: "Deliver HD to team",completed: false},
-					{name: "Get HD from team",	completed: false}
+                    {name: "Ingest", 	        completed: false},
+                    {name: "Cull",		        completed: false},
+                    {name: "Post",		        completed: false},
+                    {name: "Export",		    completed: false},
+                    {name: "Deliver HD",        completed: false},
+                    {name: "Get HD",	        completed: false},
+                    {name: "Print",	            completed: false}
 				],
 				percent: 0
 			};
@@ -120,25 +124,23 @@ app.controller("MainCtrl", ["$scope", "$location", "ItemsService", "$firebase", 
 		};
 
 		$scope.updateItem = function (id) {
-			var sum = 0;
-			for(var i=0; i<$scope.items1[id].tasks.length; i++)
-				if($scope.items1[id].tasks[i].completed)
-					sum++;
+			var i=0, sum = 0;
+            if(day1match){
+                for(i=0; i<$scope.items1[id].tasks.length; i++)
+                    if($scope.items1[id].tasks[i].completed)
+                        sum++;
 
-			$scope.items1[id].percent = sum / $scope.items1[id].tasks.length * 100;
+                $scope.items1[id].percent = sum / $scope.items1[id].tasks.length * 100;
+                ItemsService.updateItem1(id);
 
-            var sum = 0;
-            for(var i=0; i<$scope.items2[id].tasks.length; i++)
-                if($scope.items2[id].tasks[i].completed)
-                    sum++;
+            } else {
+                for(i=0; i<$scope.items2[id].tasks.length; i++)
+                    if($scope.items2[id].tasks[i].completed)
+                        sum++;
 
-            $scope.items2[id].percent = sum / $scope.items2[id].tasks.length * 100;
-
-            if(day1match)
-    			ItemsService.updateItem1(id);
-            else
+                $scope.items2[id].percent = sum / $scope.items2[id].tasks.length * 100;
                 ItemsService.updateItem2(id);
-
+            }
 
 			updateChart();
 
